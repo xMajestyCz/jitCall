@@ -1,0 +1,29 @@
+<ion-content color="new3">
+    <app-header [noShowExitButton]="false"></app-header>
+    <ion-searchbar
+    show-clear-button="always"
+    clear-icon="trash-bin"
+    animated="true"
+    placeholder="Search"
+    (ionInput)="filterContacts($event)"
+    ></ion-searchbar>
+    <h1>Contacts</h1>
+    <ion-list>
+        <ion-item *ngFor="let user of contacts" color="new3">
+            <ion-icon color="primary" slot="start" name="person-circle-sharp" size="large"></ion-icon>
+            <ion-label>
+                <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+                <p>{{ user.phone }}</p>
+            </ion-label>
+
+            <ion-button fill="clear" color="new2">
+                <ion-icon name="videocam" size="large" color="primary"></ion-icon>
+            </ion-button>
+        </ion-item>
+    </ion-list>
+    <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+        <ion-fab-button (click)="goToToggle()">
+            <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

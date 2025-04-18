@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="icon">
+    <ion-icon name="videocam" color="new" size="large"></ion-icon>
+  </div>
+  <div class="title">
+    <h1>Jitcall</h1>
+    <h1>{{ isLogin ? 'Register' : "Login"}}</h1>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <ion-input formControlName="firstName" *ngIf="!isLogin" label="First name" label-placement="floating" fill="outline" placeholder="First name" required="">
+      <ion-icon slot="start" name="person" aria-hidden="true"></ion-icon>
+    </ion-input>
+    <ion-input formControlName="lastName" *ngIf="!isLogin" label="Last name" label-placement="floating" fill="outline" placeholder="Last name" required="">
+      <ion-icon slot="start" name="person" aria-hidden="true"></ion-icon>
+    </ion-input>
+    <ion-input formControlName="email" label="Email" label-placement="floating" fill="outline" type="email" placeholder="Email" required="">
+      <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
+    </ion-input>
+    <ion-input formControlName="phone" *ngIf="!isLogin" label="Phone" label-placement="floating" fill="outline" type="tel" placeholder="Phone" required="">
+      <ion-icon slot="start" name="call" aria-hidden="true"></ion-icon>
+    </ion-input>
+    <ion-input formControlName="password" label="Password" label-placement="floating" fill="outline" [type]="showPassword ? 'text' : 'password'" placeholder="Password" required>
+      <ion-icon slot="start" name="key-sharp" aria-hidden="true"></ion-icon>
+      <ion-button fill="clear" slot="end" aria-label="Show/hide" (click)="togglePassword()">
+        <ion-icon slot="icon-only" name="eye" aria-hidden="true" color="medium"></ion-icon>
+      </ion-button>
+    </ion-input>
+    <ion-button class="sign-up" expand="block" fill="clear" shape="round" color="light" [disabled]="form.invalid" type="submit">
+      {{ isLogin ? 'Sign up' : "Sign in"}}
+    </ion-button>
+  </form>
+  <div>
+    <ion-label>{{ isLogin ? 'Have an account?' : "Don't have an account?"}}</ion-label>
+    <ion-label class="routing" (click)="goToToggle()"> 
+      {{ isLogin ? 'Register' : 'Sign in' }}
+    </ion-label>
+  </div>
+</div>

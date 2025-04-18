@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-log',
@@ -7,10 +7,10 @@ import { Component, OnInit } from '@angular/core';
   standalone: false
 })
 export class LogPage implements OnInit {
+  user: any[] = [];
 
   constructor() { }
 
   ngOnInit() {
   }
-
 }
