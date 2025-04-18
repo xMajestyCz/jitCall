@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "555567050644",
+    "project_id": "jitcall-874ab",
+    "storage_bucket": "jitcall-874ab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:555567050644:android:b339d4f4600a2c8dc8a981",
+        "android_client_info": {
+          "package_name": "com.jitcall.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBd2BLXP0tJzM-pfTEyDNEP4xcp-wac4dk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
