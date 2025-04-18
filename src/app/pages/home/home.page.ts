@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { v4 as uuidv4 } from 'uuid';
 import { FirestoreService } from 'src/app/core/services/firestore.service';
 import { Users } from 'src/app/models/users.models';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ToastService } from 'src/app/core/services/toast.service';
+import { ExternalApiService } from 'src/app/core/services/external-api.service';
+
 
 @Component({
   selector: 'app-home',
@@ -19,7 +22,8 @@ export class HomePage implements OnInit {
     private firestoreService: FirestoreService,
     private router: Router,
     private authService: AuthService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private externalApiService: ExternalApiService
   ) {}
 
   ngOnInit() {
@@ -31,8 +35,11 @@ export class HomePage implements OnInit {
       const currentUser = this.authService.getCurrentUser();
       if (currentUser && currentUser.uid) {
         this.firestoreService.getContacts(currentUser.uid).subscribe((contacts) => {
-          this.contacts = contacts;
-          this.allContacts = contacts;
+          this.contacts = contacts.map((contact: any) => ({
+            ...contact, // Datos del contacto
+            token: contact.token || '', // Asegúrate de incluir el token
+          }));
+          this.allContacts = this.contacts;
         });
       } else {
         this.toastService.showToast('No se pudo obtener el usuario autenticado ❌', 2500, 'danger');
@@ -73,6 +80,34 @@ export class HomePage implements OnInit {
       );
     });
   }  
+
+  async sendCallNotification(contact: Users) {
+    if (!contact.token) {
+      this.toastService.showToast('El contacto no tiene un token válido ❌', 2500, 'danger');
+      return;
+    }
+  
+    try {
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser) {
+        this.toastService.showToast('No se pudo obtener el usuario autenticado ❌', 2500, 'danger');
+        return;
+      }
+  
+      // Delegar la lógica al servicio
+      await this.externalApiService.notifyContact({
+        token: contact.token,
+        id: contact.phone, // Usar el número de teléfono como identificador único
+        name: currentUser.displayName,
+        userFrom: currentUser.uid,
+      });
+  
+      this.toastService.showToast('Notificación enviada correctamente ✅', 2500, 'success');
+    } catch (error) {
+      console.error('Error al enviar la notificación:', error);
+      this.toastService.showToast('Error al enviar la notificación ❌', 2500, 'danger');
+    }
+  }
 
   goToToggle() {
     this.router.navigate(['/add']);

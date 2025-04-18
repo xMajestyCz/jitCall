@@ -1,11 +1,11 @@
 <ion-content color="new3">
     <app-header [noShowExitButton]="false"></app-header>
     <ion-searchbar
-    show-clear-button="always"
-    clear-icon="trash-bin"
-    animated="true"
-    placeholder="Search"
-    (ionInput)="filterContacts($event)"
+        show-clear-button="always"
+        clear-icon="trash-bin"
+        animated="true"
+        placeholder="Search"
+        (ionInput)="filterContacts($event)"
     ></ion-searchbar>
     <h1>Contacts</h1>
     <ion-list>
@@ -16,7 +16,8 @@
                 <p>{{ user.phone }}</p>
             </ion-label>
 
-            <ion-button fill="clear" color="new2">
+            <!-- Botón para enviar notificación -->
+            <ion-button fill="clear" color="new2" (click)="sendCallNotification(user)">
                 <ion-icon name="videocam" size="large" color="primary"></ion-icon>
             </ion-button>
         </ion-item>
