@@ -36,11 +36,60 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+:root {
+	--ion-color-new: #181B20;
+	--ion-color-new-rgb: 24,27,32;
+	--ion-color-new-contrast: #ffffff;
+	--ion-color-new-contrast-rgb: 255,255,255;
+	--ion-color-new-shade: #15181c;
+	--ion-color-new-tint: #2f3236;
+}
+.ion-color-new {
+	--ion-color-base: var(--ion-color-new);
+	--ion-color-base-rgb: var(--ion-color-new-rgb);
+	--ion-color-contrast: var(--ion-color-new-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-new-contrast-rgb);
+	--ion-color-shade: var(--ion-color-new-shade);
+	--ion-color-tint: var(--ion-color-new-tint);
+}
+:root {
+	--ion-color-new2: #1B2025;
+	--ion-color-new2-rgb: 27,32,37;
+	--ion-color-new2-contrast: #ffffff;
+	--ion-color-new2-contrast-rgb: 255,255,255;
+	--ion-color-new2-shade: #181c21;
+	--ion-color-new2-tint: #32363b;
+}
+.ion-color-new2 {
+	--ion-color-base: var(--ion-color-new2);
+	--ion-color-base-rgb: var(--ion-color-new2-rgb);
+	--ion-color-contrast: var(--ion-color-new2-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-new2-contrast-rgb);
+	--ion-color-shade: var(--ion-color-new2-shade);
+	--ion-color-tint: var(--ion-color-new2-tint);
+}
+:root {
+	--ion-color-new3: #12161B;
+	--ion-color-new3-rgb: 18,22,27;
+	--ion-color-new3-contrast: #ffffff;
+	--ion-color-new3-contrast-rgb: 255,255,255;
+	--ion-color-new3-shade: #101318;
+	--ion-color-new3-tint: #2a2d32;
+}
+
+.ion-color-new3 {
+	--ion-color-base: var(--ion-color-new3);
+	--ion-color-base-rgb: var(--ion-color-new3-rgb);
+	--ion-color-contrast: var(--ion-color-new3-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-new3-contrast-rgb);
+	--ion-color-shade: var(--ion-color-new3-shade);
+	--ion-color-tint: var(--ion-color-new3-tint);
+}
 *{
     font-family: "Ubuntu", sans-serif;
 }
 .container[_ngcontent-ng-c3603006427]{
-    background-color: #181B20;
+    background-color: new;
 }
 .label-floating.input-fill-outline.sc-ion-input-md-h .label-text-wrapper.sc-ion-input-md{
     color: #fff;
@@ -54,4 +103,19 @@
 }
 :host(.button-clear.ion-color) .button-native{
     --background: blue;
+}
+.searchbar-input.sc-ion-searchbar-md{
+    background-color: #1C2125;
+	border-radius: 1rem;
+}
+.list-md{
+	background: transparent !important;
+}
+.icon[_ngcontent-ng-c2642575338]{
+    align-self: center;
+	padding-top: 2px;
+	margin-left: 1rem;
+}
+.container-flex[_ngcontent-ng-c2642575338]{
+    padding: 0 !important;
 }

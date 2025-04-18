@@ -1,0 +1,24 @@
+<ion-content color="new3">
+    <app-header [noShowButton]="false"></app-header>
+    <ion-searchbar
+    show-clear-button="always"
+    clear-icon="trash-bin"
+    animated="true"
+    placeholder="Search"
+    (ionInput)="onSearch($event)">
+    </ion-searchbar>
+    <h1>Add Contact</h1>
+
+    <ion-list>
+      <ion-item *ngFor="let user of searchResults" color="new3">
+        <ion-icon color="primary" slot="start" name="person-circle-sharp" size="large"></ion-icon>
+        <ion-label>
+          <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+          <p>{{ user.phone }}</p>
+        </ion-label>
+        <ion-button fill="clear" color="primary" (click)="addContact(user)">
+          <ion-icon name="person-add" size="large"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>      
+</ion-content>
