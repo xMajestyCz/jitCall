@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { FcmService } from './core/services/fcm.service';
+
 
 @Component({
   selector: 'app-root',
@@ -7,5 +9,7 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class AppComponent {
-  constructor() {}
+  constructor(private fcmService: FcmService) {
+    this.fcmService.initPushNotifications();
+  }
 }

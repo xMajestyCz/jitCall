@@ -11,6 +11,11 @@ export class FirestoreService {
 
   constructor(private firestore: Firestore) { }
 
+  async updateUserToken(userId: string, token: string): Promise<void> {
+    const userRef = doc(this.firestore, `users/${userId}`);
+    await setDoc(userRef, { token }, { merge: true });
+  }
+
   createDocumentWithId(data: any, path: string, id: string) {
     const document = doc(this.firestore, `${path}/${id}`);
     return setDoc(document, data);

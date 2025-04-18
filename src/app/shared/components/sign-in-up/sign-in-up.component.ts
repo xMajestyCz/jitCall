@@ -1,10 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Users } from 'src/app/models/users.models';
 import { FirestoreService } from 'src/app/core/services/firestore.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { PushNotifications, Token } from '@capacitor/push-notifications';
 
 @Component({
   selector: 'app-sign-in-up',
@@ -44,43 +44,57 @@ export class SignInUpComponent  implements OnInit {
 
   async onSubmit() {
     if (this.form.valid) {
-      const { firstName, lastName, phone, email, password } = this.form.value;
+      const { email, password } = this.form.value;
   
-      if (!this.isLogin) {
-        // Validar si el número ya existe
+      if (this.isLogin) {
+        try {
+          await this.authService.login(email, password); // Inicia sesión
+          await this.toastService.showToast('Accediendo a la página de inicio... 🔑', 3000, 'success'); // Muestra el toast
+          this.router.navigate(['/home']); // Navega a la página de inicio
+        } catch (err) {
+          console.error('Error al iniciar sesión:', err);
+          await this.toastService.showToast('Error. Verifique sus datos 🔐', 3000, 'danger');
+        }
+      } else {
+        // Registro de usuario (sin cambios)
+        const { firstName, lastName, phone } = this.form.value;
         const exists = await this.firestoreService.checkPhoneExists(phone);
         if (exists) {
           await this.toastService.showToast('Este número ya está registrado 📱', 3000, 'warning');
           return;
         }
   
-        // Si no existe, registrar usuario
-        this.authService.register(email, password).then(cred => {
+        try {
+          const cred = await this.authService.register(email, password);
           const uid = cred.user.uid;
-          const userData: Users = { firstName, lastName, phone };
   
-          this.firestoreService.createDocumentWithId(userData, 'users', uid).then(async () => {
-            await this.toastService.showToast('Usuario registrado correctamente ✅');
+          // Obtener el token FCM
+          let fcmToken = '';
+          try {
+            const permission = await PushNotifications.requestPermissions();
+            if (permission.receive === 'granted') {
+              PushNotifications.register();
+              const token: Token = await new Promise((resolve, reject) => {
+                PushNotifications.addListener('registration', resolve);
+                PushNotifications.addListener('registrationError', reject);
+              });
+              fcmToken = token.value;
+            }
+          } catch (error) {
+            console.error('Error al obtener el token FCM:', error);
+          }
   
-            setTimeout(() => {
-              this.router.navigate(['/log-in']);
-            }, 2000);
-          }).catch(async err => {
-            await this.toastService.showToast('Error al guardar datos 🔥', 3000, 'danger');
-          });
-  
-        }).catch(async err => {
+          // Guardar datos del usuario en Firestore
+          const userData = { firstName, lastName, phone, token: fcmToken };
+          await this.firestoreService.createDocumentWithId(userData, 'users', uid);
+          await this.toastService.showToast('Usuario registrado correctamente ✅', 3000, 'success');
+          setTimeout(() => {
+            this.router.navigate(['/log-in']);
+          }, 2000);
+        } catch (err) {
+          console.error('Error al registrar usuario:', err);
           await this.toastService.showToast('Error al registrar usuario 🔐', 3000, 'danger');
-        });
-  
-      } else {
-        // LOGIN
-        this.authService.login(email, password).then(async () => {
-          await this.toastService.showToast('Accediendo a la página de inicio... 🔑', 3000, 'success');
-          this.router.navigate(['/home']);
-        }).catch(async err => {
-          await this.toastService.showToast('Error. Verifique sus datos 🔐', 3000, 'danger');
-        });
+        }
       }
     }
   }
