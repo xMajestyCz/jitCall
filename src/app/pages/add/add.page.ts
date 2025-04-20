@@ -15,7 +15,7 @@ export class AddPage implements OnInit {
   searchResults: Users[] = [];
 
   constructor(
-    private firestore: Firestore, // Inyectar Firestore aquí
+    private firestore: Firestore,
     private firestoreService: FirestoreService,
     private toastService: ToastService,
     private authService: AuthService,
@@ -38,6 +38,18 @@ export class AddPage implements OnInit {
       const currentUser = this.authService.getCurrentUser();
       if (!currentUser) {
         this.toastService.showToast('No se pudo obtener el usuario autenticado ❌', 2500, 'danger');
+        return;
+      }
+  
+      const currentUserPhone = await this.authService.getCurrentUserPhone();
+      if (!currentUserPhone) {
+        this.toastService.showToast('No se pudo obtener el número de teléfono del usuario autenticado ❌', 2500, 'danger');
+        return;
+      }
+  
+      // Validación para evitar que el usuario se agregue a sí mismo
+      if (user.phone === currentUserPhone) {
+        this.toastService.showToast('No puedes agregarte a ti mismo como contacto ❌', 2500, 'warning');
         return;
       }
   

@@ -48,15 +48,14 @@ export class SignInUpComponent  implements OnInit {
   
       if (this.isLogin) {
         try {
-          await this.authService.login(email, password); // Inicia sesión
-          await this.toastService.showToast('Accediendo a la página de inicio... 🔑', 3000, 'success'); // Muestra el toast
-          this.router.navigate(['/home']); // Navega a la página de inicio
+          await this.authService.login(email, password);
+          await this.toastService.showToast('Accediendo a la página de inicio... 🔑', 3000, 'success');
+          this.router.navigate(['/home']);
         } catch (err) {
           console.error('Error al iniciar sesión:', err);
           await this.toastService.showToast('Error. Verifique sus datos 🔐', 3000, 'danger');
         }
       } else {
-        // Registro de usuario (sin cambios)
         const { firstName, lastName, phone } = this.form.value;
         const exists = await this.firestoreService.checkPhoneExists(phone);
         if (exists) {
@@ -68,7 +67,6 @@ export class SignInUpComponent  implements OnInit {
           const cred = await this.authService.register(email, password);
           const uid = cred.user.uid;
   
-          // Obtener el token FCM
           let fcmToken = '';
           try {
             const permission = await PushNotifications.requestPermissions();
@@ -83,8 +81,7 @@ export class SignInUpComponent  implements OnInit {
           } catch (error) {
             console.error('Error al obtener el token FCM:', error);
           }
-  
-          // Guardar datos del usuario en Firestore
+
           const userData = { firstName, lastName, phone, token: fcmToken };
           await this.firestoreService.createDocumentWithId(userData, 'users', uid);
           await this.toastService.showToast('Usuario registrado correctamente ✅', 3000, 'success');
@@ -98,7 +95,6 @@ export class SignInUpComponent  implements OnInit {
       }
     }
   }
-  
 
   togglePassword() {
     this.showPassword = !this.showPassword;

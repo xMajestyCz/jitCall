@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { v4 as uuidv4 } from 'uuid';
 import { FirestoreService } from 'src/app/core/services/firestore.service';
 import { Users } from 'src/app/models/users.models';
 import { Router } from '@angular/router';
@@ -36,8 +35,8 @@ export class HomePage implements OnInit {
       if (currentUser && currentUser.uid) {
         this.firestoreService.getContacts(currentUser.uid).subscribe((contacts) => {
           this.contacts = contacts.map((contact: any) => ({
-            ...contact, // Datos del contacto
-            token: contact.token || '', // Asegúrate de incluir el token
+            ...contact,
+            token: contact.token || '', 
           }));
           this.allContacts = this.contacts;
         });
@@ -94,10 +93,9 @@ export class HomePage implements OnInit {
         return;
       }
   
-      // Delegar la lógica al servicio
       await this.externalApiService.notifyContact({
         token: contact.token,
-        id: contact.phone, // Usar el número de teléfono como identificador único
+        id: contact.phone,
         name: currentUser.displayName,
         userFrom: currentUser.uid,
       });

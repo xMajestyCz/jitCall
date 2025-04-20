@@ -1,31 +1,45 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { v4 as uuidv4 } from 'uuid';
-import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExternalApiService {
   private apiUrl = 'https://ravishing-courtesy-production.up.railway.app';
-  private tokenKey = 'apiToken';
+  private tokenKey = 'authToken';
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient) {}
 
-  // Método para autenticar y obtener el token de acceso
+  async authenticateAndSendNotification(payload: any): Promise<void> {
+    try {
+      console.log('Llamando a authenticate...');
+      await this.authenticate();
+      console.log('Autenticación completada. Enviando notificación...');
+      await this.sendNotification(payload);
+    } catch (error) {
+      console.error('Error en el flujo de autenticación o notificación:', error);
+    }
+  }
+
   async authenticate(): Promise<void> {
     try {
+      console.log('Ejecutando el método authenticate...');
       const response: any = await this.http
         .post(`${this.apiUrl}/user/login`, {
-          username: 'andres.henaohilders@unicolombo.edu.co',
+          email: 'andres.henaohilders@unicolombo.edu.co',
           password: '1041974512',
         })
         .toPromise();
   
-      // Guardar el token de acceso en localStorage
+      console.log('Respuesta completa de la API:', response);
+  
       const token = response.data?.access_token;
+      console.log('Token recibido de la API:', token);
+  
       if (token) {
         localStorage.setItem(this.tokenKey, token);
+        console.log('Token guardado en localStorage:', localStorage.getItem(this.tokenKey));
       } else {
         throw new Error('No se recibió un token de acceso válido.');
       }
@@ -34,20 +48,36 @@ export class ExternalApiService {
       throw error;
     }
   }
-
-  // Obtener el token de acceso almacenado
+  
   getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+    const token = localStorage.getItem(this.tokenKey);
+    console.log('Token recuperado:', token);
+    return token;
   }
-
-  // Método para enviar notificaciones
+  
   async sendNotification(payload: any): Promise<void> {
-    await this.http.post(`${this.apiUrl}/notifications`, payload).toPromise();
+    const token = this.getToken();
+    if (!token) {
+      console.error('Token no encontrado en localStorage');
+      throw new Error('No se encontró un token de autenticación. Por favor, autentíquese nuevamente.');
+    }
+  
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+  
+    try {
+      await this.http.post(`${this.apiUrl}/notifications`, payload, { headers }).toPromise();
+    } catch (error) {
+      console.error('Error al enviar la notificación:', error);
+      throw error;
+    }
   }
 
-  // Método para construir y enviar la notificación
   async notifyContact(contact: any): Promise<void> {
-    const payload = {
+    const payload = 
+    {
       token: contact.token,
       notification: {
         title: 'Llamada entrante',
@@ -57,7 +87,7 @@ export class ExternalApiService {
         priority: 'high',
         data: {
           userId: contact.id,
-          meetingId: uuidv4(), // Generar un ID único para la llamada
+          meetingId: uuidv4(), 
           type: 'incoming_call',
           name: contact.name,
           userFrom: contact.userFrom,
