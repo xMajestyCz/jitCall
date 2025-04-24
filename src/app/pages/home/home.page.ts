@@ -96,9 +96,11 @@ export class HomePage implements OnInit {
       await this.externalApiService.notifyContact({
         token: contact.token,
         id: contact.phone,
-        name: currentUser.displayName,
+        firstName: contact.firstName,
+        lastName: contact.lastName,
         userFrom: currentUser.uid,
       });
+      
   
       this.toastService.showToast('Notificación enviada correctamente ✅', 2500, 'success');
     } catch (error) {

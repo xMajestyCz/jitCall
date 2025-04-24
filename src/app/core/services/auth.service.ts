@@ -25,8 +25,8 @@ export class AuthService {
     return signInWithEmailAndPassword(this.auth, email, password);
   }
 
-  getCurrentUser() {
-    return this.currentUser.value;
+  getCurrentUser(): User | null {
+    return this.auth.currentUser;
   }
 
   async getCurrentUserPhone(): Promise<string | null> {

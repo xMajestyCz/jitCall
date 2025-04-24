@@ -4,17 +4,17 @@ import { authGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
   {
-    path: 'log',
-    loadChildren: () => import('./pages/log/log.module').then( m => m.LogPageModule)
+    path: 'log-in',
+    loadChildren: () => import('./pages/log-in/log-in.module').then( m => m.LogInPageModule)
   },
   {
     path: '',
-    redirectTo: 'log',
+    redirectTo: 'log-in',
     pathMatch: 'full'
   },
   {
-    path: 'log-in',
-    loadChildren: () => import('./pages/log-in/log-in.module').then( m => m.LogInPageModule)
+    path: 'log',
+    loadChildren: () => import('./pages/log/log.module').then( m => m.LogPageModule)
   },
   {
     path: 'home',

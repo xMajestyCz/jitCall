@@ -29,8 +29,9 @@ export class AddPage implements OnInit {
       this.searchResults = [];
       return;
     }
-
+  
     this.searchResults = await this.firestoreService.searchUsersByPhone(searchValue);
+    console.log('Resultados de búsqueda:', this.searchResults);
   }
 
   async addContact(user: any): Promise<void> {

@@ -25,8 +25,16 @@ export class FirestoreService {
     const usersRef = collection(this.firestore, 'users');
     const q = query(usersRef, where('phone', '==', phone));
     const querySnapshot = await getDocs(q);
-
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  
+    console.log('Documentos obtenidos de Firestore:', querySnapshot.docs.map(doc => doc.data()));
+  
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      firstName: doc.data()['firstName'] || 'Nombre',
+      lastName: doc.data()['lastName'] || 'Desconocido',
+      phone: doc.data()['phone'],
+      token: doc.data()['token'] || '',
+    }));
   }
 
   async addContact(user: any, currentUserId: string): Promise<void> {

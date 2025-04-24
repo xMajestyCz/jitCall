@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { v4 as uuidv4 } from 'uuid';
+import { AuthService } from './auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
+
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +12,7 @@ export class ExternalApiService {
   private apiUrl = 'https://ravishing-courtesy-production.up.railway.app';
   private tokenKey = 'authToken';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   async authenticateAndSendNotification(payload: any): Promise<void> {
     try {
@@ -34,8 +37,9 @@ export class ExternalApiService {
   
       console.log('Respuesta completa de la API:', response);
   
-      const token = response.data?.access_token;
-      console.log('Token recibido de la API:', token);
+      const tokenWithBearer = response.data?.access_token;
+      const token = tokenWithBearer.replace('Bearer ', '');
+      console.log('Token recibido de la API (sin Bearer):', token);
   
       if (token) {
         localStorage.setItem(this.tokenKey, token);
@@ -48,13 +52,13 @@ export class ExternalApiService {
       throw error;
     }
   }
-  
+
   getToken(): string | null {
     const token = localStorage.getItem(this.tokenKey);
     console.log('Token recuperado:', token);
     return token;
   }
-  
+
   async sendNotification(payload: any): Promise<void> {
     const token = this.getToken();
     if (!token) {
@@ -68,33 +72,67 @@ export class ExternalApiService {
     };
   
     try {
-      await this.http.post(`${this.apiUrl}/notifications`, payload, { headers }).toPromise();
+      console.log('Enviando notificación con payload:', payload);
+      console.log('Encabezados de la solicitud:', headers);
+  
+      const response = await this.http.post(`${this.apiUrl}/notifications`, payload, { headers }).toPromise();
+      console.log('Notificación enviada con éxito:', response);
     } catch (error) {
       console.error('Error al enviar la notificación:', error);
+    
+      const httpError = error as HttpErrorResponse;
+    
+      if (httpError.status === 500) {
+        console.error('Error interno del servidor. Verifica los logs del servidor.');
+      } else if (httpError.status === 401) {
+        console.error('Token de autenticación inválido o expirado.');
+      } else {
+        console.error('Error desconocido:', httpError.message);
+      }
+    
       throw error;
     }
   }
 
   async notifyContact(contact: any): Promise<void> {
-    const payload = 
-    {
-      token: contact.token,
-      notification: {
-        title: 'Llamada entrante',
-        body: `${contact.name} te está llamando`,
-      },
-      android: {
-        priority: 'high',
-        data: {
-          userId: contact.id,
-          meetingId: uuidv4(), 
-          type: 'incoming_call',
-          name: contact.name,
-          userFrom: contact.userFrom,
-        },
-      },
-    };
+    try {
+      console.log('Objeto contact recibido:', contact);
   
-    await this.sendNotification(payload);
+      const firstName = contact.firstName || 'Nombre';
+      const lastName = contact.lastName || 'Desconocido';
+  
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser) {
+        throw new Error('No se pudo obtener el usuario autenticado.');
+      }
+  
+      const userFrom = currentUser.uid;
+  
+      const payload = {
+        token: contact.token,
+        notification: {
+          title: 'Llamada entrante',
+          body: `${firstName} ${lastName} te está llamando`,
+        },
+        android: {
+          priority: 'high',
+          data: {
+            userId: contact.id || 'ID_USUARIO_DESTINO',
+            meetingId: uuidv4(),
+            type: 'incoming_call',
+            name: `${firstName} ${lastName}`,
+            userFrom: userFrom,
+          },
+        },
+      };
+  
+      console.log('Payload enviado:', JSON.stringify(payload, null, 2));
+      console.log('Payload generado para la notificación:', payload);
+  
+      await this.authenticateAndSendNotification(payload);
+    } catch (error) {
+      console.error('Error al notificar al contacto:', error);
+      throw error;
+    }
   }
 }
