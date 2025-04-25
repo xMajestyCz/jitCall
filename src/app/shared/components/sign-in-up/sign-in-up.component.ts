@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FirestoreService } from 'src/app/core/services/firestore.service';
-import { ToastService } from '../../../core/services/toast.service';
+import { ToastService } from '../../services/toast.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { PushNotifications, Token } from '@capacitor/push-notifications';
 

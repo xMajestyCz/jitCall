@@ -29,6 +29,7 @@
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/push-notifications": "^7.0.1",
     "@capacitor/status-bar": "7.0.1",
+    "@henao/jitsi-meet-capacitor": "file:jitsi-meet-capacitor",
     "@ionic/angular": "^8.0.0",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",

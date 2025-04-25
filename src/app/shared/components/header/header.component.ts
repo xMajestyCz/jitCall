@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Location } from '@angular/common';
-import { AlertService } from 'src/app/core/services/alert.service';
+import { AlertService } from 'src/app/shared/services/alert.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { ToastService } from 'src/app/core/services/toast.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
 
 @Component({
   selector: 'app-header',

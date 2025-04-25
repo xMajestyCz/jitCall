@@ -1,9 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Firestore, collection, doc, getDocs, query, setDoc, where } from '@angular/fire/firestore';
 import { Users } from 'src/app/models/users.models';
-import { ToastService } from 'src/app/core/services/toast.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
 import { FirestoreService } from 'src/app/core/services/firestore.service';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { FcmService } from 'src/app/core/services/fcm.service';
+import { ModalController } from '@ionic/angular';
+import { IncomingCallModalComponent } from 'src/app/shared/components/incoming-call-modal/incoming-call-modal.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-add',
@@ -11,17 +15,30 @@ import { AuthService } from 'src/app/core/services/auth.service';
   styleUrls: ['./add.page.scss'],
   standalone: false
 })
-export class AddPage implements OnInit {
+export class AddPage implements OnInit, OnDestroy {
   searchResults: Users[] = [];
+  private notificationSub?: Subscription;
 
   constructor(
     private firestore: Firestore,
     private firestoreService: FirestoreService,
     private toastService: ToastService,
     private authService: AuthService,
+    private fcmService: FcmService, 
+    private modalCtrl: ModalController
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.notificationSub = this.fcmService.notificationReceived.subscribe((notification) => {
+      this.showIncomingCallModal(notification);
+    });
+  }
+  
+  ngOnDestroy() {
+    if (this.notificationSub) {
+      this.notificationSub.unsubscribe();
+    }
+  }
 
   async onSearch(event: any) {
     const searchValue = event.detail.value?.trim();
@@ -77,5 +94,18 @@ export class AddPage implements OnInit {
       console.error('Error al agregar contacto:', error);
       this.toastService.showToast('Error al agregar contacto ❌', 2500, 'danger');
     }
+  }
+
+  async showIncomingCallModal(notification: any) {
+    const { name, meetingId, userFrom } = notification.data;
+    const modal = await this.modalCtrl.create({
+      component: IncomingCallModalComponent,
+      componentProps: {
+        name: name || 'Contacto',
+        meetingId: meetingId || '',
+        userFrom: userFrom || '',
+      },
+    });
+    await modal.present();
   }
 }

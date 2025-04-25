@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FcmService } from './core/services/fcm.service';
-
 
 @Component({
   selector: 'app-root',
@@ -8,8 +7,10 @@ import { FcmService } from './core/services/fcm.service';
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent {
-  constructor(private fcmService: FcmService) {
+export class AppComponent implements OnInit{
+  constructor(private fcmService: FcmService) {}
+
+  ngOnInit() {
     this.fcmService.initPushNotifications();
   }
 }

@@ -94,10 +94,8 @@ export class ExternalApiService {
     }
   }
 
-  async notifyContact(contact: any): Promise<void> {
+  async notifyContact(contact: any): Promise<string> {
     try {
-      console.log('Objeto contact recibido:', contact);
-  
       const firstName = contact.firstName || 'Nombre';
       const lastName = contact.lastName || 'Desconocido';
   
@@ -107,6 +105,7 @@ export class ExternalApiService {
       }
   
       const userFrom = currentUser.uid;
+      const meetingId = uuidv4(); 
   
       const payload = {
         token: contact.token,
@@ -118,7 +117,7 @@ export class ExternalApiService {
           priority: 'high',
           data: {
             userId: contact.id || 'ID_USUARIO_DESTINO',
-            meetingId: uuidv4(),
+            meetingId,
             type: 'incoming_call',
             name: `${firstName} ${lastName}`,
             userFrom: userFrom,
@@ -126,13 +125,13 @@ export class ExternalApiService {
         },
       };
   
-      console.log('Payload enviado:', JSON.stringify(payload, null, 2));
-      console.log('Payload generado para la notificación:', payload);
-  
       await this.authenticateAndSendNotification(payload);
+  
+      return meetingId; 
     } catch (error) {
       console.error('Error al notificar al contacto:', error);
       throw error;
     }
   }
+  
 }

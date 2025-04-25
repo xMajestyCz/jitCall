@@ -1,0 +1,16 @@
+<ion-content>
+  <div class="call-info">
+      <h2>Llamada entrante 📞</h2>
+      
+      <div class="call-buttons">
+          <ion-button expand="block" color="success" (click)="aceptar()" [disabled]="loading">
+              <ion-spinner *ngIf="loading"></ion-spinner>
+              <span *ngIf="!loading">Aceptar</span>
+          </ion-button>
+          
+          <ion-button expand="block" color="danger" (click)="rechazar()" [disabled]="loading">
+              Rechazar
+          </ion-button>
+      </div>
+  </div>
+</ion-content>
