@@ -4,7 +4,6 @@ import { FirestoreService } from './firestore.service';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { IncomingCallModalComponent } from 'src/app/shared/components/incoming-call-modal/incoming-call-modal.component';
 
 @Injectable({
   providedIn: 'root'
@@ -39,34 +38,26 @@ export class FcmService {
 
     PushNotifications.addListener('pushNotificationReceived', async (notification) => {
       console.log('Notificación recibida en primer plano:', notification);
-    
-      const currentRoute = this.router.url;
-      if (notification.data?.type === 'incoming_call' && (currentRoute === '/home' || currentRoute === '/add')) {
-        this.showIncomingCallModal(notification);
-      } else {
-        this.notificationReceived.emit(notification);
-      }
     });
     
 
-    PushNotifications.addListener('pushNotificationActionPerformed', async (action: ActionPerformed) => {
+    PushNotifications.addListener('pushNotificationActionPerformed', (action: ActionPerformed) => {
       console.log('Acción de notificación:', action);
-      if (action.notification.data?.type === 'incoming_call') {
-        this.showIncomingCallModal(action.notification);
-      }
-    });    
-  }
-
-  async showIncomingCallModal(notification: any) {
-    const { name, meetingId, userFrom } = notification.data;
-    const modal = await this.modalCtrl.create({
-      component: IncomingCallModalComponent,
-      componentProps: {
-        name: name || 'Contacto',
-        meetingId: meetingId || '',
-        userFrom: userFrom || '',
-      },
-    });
-    await modal.present();
+    
+      const notification = action.notification;
+      console.log('Datos de la notificación:', notification.data);
+    
+      if (notification.data) {
+        const callerName = notification.data.name || 'Desconocido';
+        const meetingId = notification.data.meetingId || '';
+      
+        if (meetingId) {
+          this.router.navigate(['/incoming-call'], {
+            queryParams: { callerName, meetingId }
+          });
+          return;
+        }
+      }      
+    });           
   }
 }

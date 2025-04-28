@@ -1,0 +1,32 @@
+.incoming-call-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    height: 100vh;
+
+    .call-container {
+        height: 100%;
+        align-content: center;
+        text-align: center;
+        width: 100%;
+        padding: 20px;
+    
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+    
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+    
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+}  

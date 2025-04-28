@@ -48,4 +48,16 @@ export class AuthService {
   isLoggedIn(): boolean {
     return this.currentUser.value !== null;
   }
+
+  async getUserDisplayName(): Promise<string | null> {
+    const currentUser = this.getCurrentUser();
+    if (currentUser) {
+      const userDoc = await getDoc(doc(this.firestore, 'users', currentUser.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data() as Users; 
+        return `${userData.firstName} ${userData.lastName}`;
+      }
+    }
+    return null;
+  }
 }

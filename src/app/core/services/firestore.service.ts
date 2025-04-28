@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, doc, setDoc, collection, query, where, getDocs } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, collection, query, where, getDocs, updateDoc, onSnapshot, getDoc } from '@angular/fire/firestore';
 import { collectionData } from '@angular/fire/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import { Observable } from 'rxjs';
@@ -74,4 +74,36 @@ export class FirestoreService {
     return !querySnapshot.empty;
   }
   
+  async createCall(callData: any): Promise<void> {
+    const callRef = doc(this.firestore, `calls/${callData.meetingId}`);
+    await setDoc(callRef, callData);
+}
+
+  listenCallStatus(meetingId: string): Observable<any> {
+    return new Observable((observer) => {
+      const callRef = doc(this.firestore, `calls/${meetingId}`);
+      const unsubscribe = onSnapshot(callRef, (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          observer.next(docSnapshot.data());
+        } else {
+          observer.error('La llamada no existe');
+        }
+      });
+
+      return () => unsubscribe();
+    });
+  }
+
+  async updateCallStatus(meetingId: string, status: string): Promise<void> {
+    const callRef = doc(this.firestore, `calls/${meetingId}`);
+    const callDoc = await getDoc(callRef);
+
+    if (!callDoc.exists()) {
+        console.error('El documento no existe');
+        throw new Error('Documento no encontrado');
+    }
+
+    await updateDoc(callRef, { status });
+}
+
 }

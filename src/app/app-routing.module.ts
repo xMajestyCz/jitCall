@@ -25,7 +25,11 @@ const routes: Routes = [
     path: 'add',
     canActivate: [authGuard],
     loadChildren: () => import('./pages/add/add.module').then( m => m.AddPageModule)
+  },  {
+    path: 'incoming-call',
+    loadChildren: () => import('./pages/incoming-call/incoming-call.module').then( m => m.IncomingCallPageModule)
   },
+
 ];
 
 @NgModule({

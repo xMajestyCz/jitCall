@@ -5,14 +5,9 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ToastService } from 'src/app/shared/services/toast.service';
 import { ExternalApiService } from 'src/app/core/services/external-api.service';
-import { FcmService } from 'src/app/core/services/fcm.service';
-import { ModalController } from '@ionic/angular';
-import { IncomingCallModalComponent } from 'src/app/shared/components/incoming-call-modal/incoming-call-modal.component';
 import { Subscription } from 'rxjs';
-import { JitsiService } from 'src/app/core/services/jitsi.service';
 import { v4 as uuidv4 } from 'uuid';
-import { CallService } from 'src/app/core/services/call.service';
-
+import { Jitsi } from 'capacitor-jitsi-meet';
 
 @Component({
   selector: 'app-home',
@@ -25,24 +20,17 @@ export class HomePage implements OnInit, OnDestroy {
   allContacts: Users[] = [];
   private notificationSub?: Subscription;
 
+
   constructor(
     private firestoreService: FirestoreService,
     private router: Router,
     private authService: AuthService,
     private toastService: ToastService,
     private externalApiService: ExternalApiService,
-    private fcmService: FcmService,
-    private modalCtrl: ModalController,
-    private jitsiService: JitsiService,
-    private callService: CallService
   ) {}
 
   ngOnInit() {
     this.loadContacts();
-
-    this.notificationSub = this.fcmService.notificationReceived.subscribe((notification) => {
-      this.showIncomingCallModal(notification);
-    });
   }
 
   ngOnDestroy() {
@@ -68,19 +56,6 @@ export class HomePage implements OnInit, OnDestroy {
     } catch (error) {
       this.toastService.showToast('Hubo un error al cargar los contactos ❌', 2500, 'danger');
     }
-  }
-  
-  async showIncomingCallModal(notification: any) {
-    const { name, meetingId, userFrom } = notification.data;
-    const modal = await this.modalCtrl.create({
-      component: IncomingCallModalComponent,
-      componentProps: {
-        name: name || 'Contacto',
-        meetingId: meetingId || '',
-        userFrom: userFrom || '',
-      },
-    });
-    await modal.present();
   }
   
   normalizeText(text: string): string {
@@ -117,46 +92,89 @@ export class HomePage implements OnInit, OnDestroy {
 
   async sendCallNotification(contact: Users) {
     if (!contact.token) {
-        this.toastService.showToast('El contacto no tiene un token válido ❌', 2500, 'danger');
-        return;
+      this.toastService.showToast('El contacto no tiene un token válido ❌', 2500, 'danger');
+      return;
     }
 
     try {
-        const currentUser = this.authService.getCurrentUser();
-        if (!currentUser) {
-            this.toastService.showToast('No se pudo obtener el usuario autenticado ❌', 2500, 'danger');
-            return;
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser) {
+        this.toastService.showToast('No se pudo obtener el usuario autenticado ❌', 2500, 'danger');
+        return;
+      }
+
+      const meetingId = uuidv4()
+
+      await this.firestoreService.createCall({
+        meetingId,
+        callerId: currentUser.uid,
+        receiverId: contact.id,
+        status: 'ringing',
+        createdAt: Date.now(),
+      });
+
+      await this.externalApiService.notifyContact({
+        token: contact.token,
+        id: contact.phone,
+        firstName: contact.firstName,
+        lastName: contact.lastName,
+        userFrom: currentUser.uid,
+        meetingId, 
+      });
+
+      this.notificationSub = this.firestoreService.listenCallStatus(meetingId).subscribe(async callData => {
+        console.log('Estado de la llamada recibido:', callData);
+      
+        if (callData.status === 'accepted') {
+          try {
+            const displayName = await this.authService.getUserDisplayName();
+            const result = await Jitsi.joinConference({
+              roomName: meetingId,
+              displayName: displayName || '',  
+              url: 'https://jitsi1.geeksec.de', 
+              featureFlags: {
+                'prejoinpage.enabled': false,
+                'recording.enabled': false,
+                'live-streaming.enabled': false,
+                'android.screensharing.enabled': false,
+                'invite.enabled': false,
+                'add-people.enabled': false,
+                'calendar.enabled': false,
+                'close-captions.enabled': false,
+              },
+              configOverrides: { 
+                startWithAudioMuted: false,
+                startWithVideoMuted: false,
+                enableLobby: false,
+                disableInviteFunctions: true,
+                requireDisplayName: false,
+                enableUserRolesBasedOnToken: false,
+                startAudioOnly: false,
+                disableModeratorIndicator: true,
+                disableJoinLeaveNotifications: true,
+              },
+              chatEnabled: false,
+              inviteEnabled: false,
+            });
+      
+            console.log('Conferencia iniciada', result);
+          } catch (error) {
+            console.error('Error al unirse a la conferencia', error);
+          }
         }
+      
+        if (callData.status === 'rejected') {
+          console.log('La llamada fue rechazada');
+        }
+      });
+      
 
-        const meetingId = uuidv4();
-
-        await this.callService.createCall({
-            meetingId,
-            callerId: currentUser.uid,
-            //recipientId: contact.id,
-            status: 'calling',
-            timestamp: new Date()
-        });
-
-        await this.externalApiService.notifyContact({
-            token: contact.token,
-            id: contact.phone,
-            firstName: contact.firstName,
-            lastName: contact.lastName,
-            userFrom: currentUser.uid,
-            meetingId: meetingId  
-        });
-
-        setTimeout(() => {
-            this.jitsiService.startCall(meetingId);
-        }, 2000);
-
-        this.toastService.showToast('Llamada iniciada correctamente ✅', 2500, 'success');
+      this.toastService.showToast('Llamando... 🔔', 2500, 'primary');
     } catch (error) {
-        console.error('Error al iniciar la llamada:', error);
-        this.toastService.showToast('Error al iniciar la llamada ❌', 2500, 'danger');
+      console.error('Error al iniciar llamada:', error);
+      this.toastService.showToast('Error al iniciar la llamada ❌', 2500, 'danger');
     }
-}
+  }
 
   goToToggle() {
     this.router.navigate(['/add']);

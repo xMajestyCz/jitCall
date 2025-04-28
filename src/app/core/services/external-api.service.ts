@@ -94,19 +94,14 @@ export class ExternalApiService {
     }
   }
 
-  async notifyContact(contact: any): Promise<string> {
+  async notifyContact(contact: any): Promise<void> {
     try {
       const firstName = contact.firstName || 'Nombre';
       const lastName = contact.lastName || 'Desconocido';
-  
-      const currentUser = this.authService.getCurrentUser();
-      if (!currentUser) {
-        throw new Error('No se pudo obtener el usuario autenticado.');
-      }
-  
-      const userFrom = currentUser.uid;
-      const meetingId = uuidv4(); 
-  
+
+      const userFrom = contact.userFrom;
+      const meetingId = contact.meetingId;
+
       const payload = {
         token: contact.token,
         notification: {
@@ -117,21 +112,21 @@ export class ExternalApiService {
           priority: 'high',
           data: {
             userId: contact.id || 'ID_USUARIO_DESTINO',
-            meetingId,
+            meetingId: meetingId,
             type: 'incoming_call',
             name: `${firstName} ${lastName}`,
             userFrom: userFrom,
           },
         },
       };
-  
+
       await this.authenticateAndSendNotification(payload);
-  
-      return meetingId; 
+
     } catch (error) {
       console.error('Error al notificar al contacto:', error);
       throw error;
     }
   }
+
   
 }

@@ -6,13 +6,12 @@ import { SignInUpComponent } from './components/sign-in-up/sign-in-up.component'
 import { HeaderComponent } from './components/header/header.component';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { IncomingCallModalComponent } from './components/incoming-call-modal/incoming-call-modal.component';
 
 @NgModule({
-  declarations: [SignInUpComponent, HeaderComponent, IncomingCallModalComponent],
+  declarations: [SignInUpComponent, HeaderComponent],
   imports: [
     CommonModule, IonicModule, FormsModule, RouterModule, ReactiveFormsModule
   ],
-  exports: [SignInUpComponent, HeaderComponent, IncomingCallModalComponent],
+  exports: [SignInUpComponent, HeaderComponent],
 })
 export class SharedModule { }

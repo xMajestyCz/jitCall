@@ -6,7 +6,6 @@ import { FirestoreService } from 'src/app/core/services/firestore.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { FcmService } from 'src/app/core/services/fcm.service';
 import { ModalController } from '@ionic/angular';
-import { IncomingCallModalComponent } from 'src/app/shared/components/incoming-call-modal/incoming-call-modal.component';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -29,9 +28,6 @@ export class AddPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.notificationSub = this.fcmService.notificationReceived.subscribe((notification) => {
-      this.showIncomingCallModal(notification);
-    });
   }
   
   ngOnDestroy() {
@@ -94,18 +90,5 @@ export class AddPage implements OnInit, OnDestroy {
       console.error('Error al agregar contacto:', error);
       this.toastService.showToast('Error al agregar contacto ❌', 2500, 'danger');
     }
-  }
-
-  async showIncomingCallModal(notification: any) {
-    const { name, meetingId, userFrom } = notification.data;
-    const modal = await this.modalCtrl.create({
-      component: IncomingCallModalComponent,
-      componentProps: {
-        name: name || 'Contacto',
-        meetingId: meetingId || '',
-        userFrom: userFrom || '',
-      },
-    });
-    await modal.present();
   }
 }

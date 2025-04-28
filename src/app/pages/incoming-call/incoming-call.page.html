@@ -1,0 +1,16 @@
+<ion-content class="ion-padding incoming-call-page" fullscreen>
+  <div class="call-container">
+    <h2>📞 Llamada entrante</h2>
+    <p><strong>{{ callerName }}</strong> te está llamando</p>
+
+    <div class="buttons">
+      <ion-button color="success" expand="block" (click)="acceptCall()">
+        Aceptar
+      </ion-button>
+
+      <ion-button color="danger" expand="block" (click)="rejectCall()">
+        Rechazar
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
