@@ -1,0 +1,25 @@
+<div [formGroup]="form">
+  <ion-input 
+    formControlName="{{controlName}}"
+    [label]="label"
+    label-placement="floating"
+    fill="outline"
+    [type]="showPasswordToggle ? (showPassword ? 'text' : 'password') : type"
+    [placeholder]="placeholder"
+    [attr.maxlength]="maxlength !== null ? maxlength : null"
+    [attr.minlength]="minlength !== null ? minlength : null"
+    (keypress)="onKeyPress($event)"
+  >
+    <ion-icon slot="start" [name]="iconName" aria-hidden="true"></ion-icon>
+    
+    <ion-button 
+      *ngIf="showPasswordToggle"
+      fill="clear" 
+      slot="end" 
+      aria-label="Show/hide" 
+      (click)="togglePasswordVisibility()"
+    >
+      <ion-icon slot="icon-only" name="eye" aria-hidden="true" color="medium"></ion-icon>
+    </ion-button>
+  </ion-input>
+</div>

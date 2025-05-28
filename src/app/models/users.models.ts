@@ -4,4 +4,6 @@ export interface Users {
     lastName: string;
     phone: string;
     token?: string;
+    profileImage?: string;  
+    updatedAt?: Date; 
 }

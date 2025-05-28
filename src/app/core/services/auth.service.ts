@@ -45,10 +45,6 @@ export class AuthService {
     return this.auth.signOut();
   }
 
-  isLoggedIn(): boolean {
-    return this.currentUser.value !== null;
-  }
-
   async getUserDisplayName(): Promise<string | null> {
     const currentUser = this.getCurrentUser();
     if (currentUser) {

@@ -1,0 +1,117 @@
+<ion-content color="new3">
+  <app-header [noShowButton]="false" [noShowCamButton]="false" (callButtonClick)="startCall()"></app-header>
+  
+  <div class="content">
+  <div class="chat-messages">
+    <div *ngFor="let message of messages" 
+        [class.sent]="message.senderId === currentUser?.id"
+        [class.received]="message.senderId !== currentUser?.id"
+        class="message">
+      
+      <ion-avatar *ngIf="message.senderId !== currentUser?.id" class="message-avatar">
+        <img [src]="message.senderImage || 'assets/default-avatar.png'" alt="sender avatar">
+      </ion-avatar>
+      
+      <div class="message-content-container">
+        <div *ngIf="message.type === 'text'" class="message-content">
+          {{ message.text }}
+        </div>
+        
+        <div *ngIf="message.type === 'image'" class="image-message">
+          <img [src]="message.content" alt="Imagen enviada" style="max-width: 220px; max-height: 220px; border-radius: 12px;" />
+        </div>
+        <div *ngIf="message.type === 'video'" class="video-message">
+          <video controls style="max-width: 220px; max-height: 220px; border-radius: 12px;">
+            <source [src]="message.content" type="video/mp4" />
+            Tu navegador no soporta la reproducción de video.
+          </video>
+        </div>
+        <div *ngIf="message.type === 'audio'" class="audio-message">
+          <ion-button fill="clear" (click)="playAudioMessage(message)">
+            <ion-icon name="play"></ion-icon>
+          </ion-button>
+          <span>{{ (message.duration || 0) | formatTime }}</span>
+        </div>
+        <div *ngIf="message.type === 'file'" class="file-message">
+          <ion-icon name="document-attach" style="font-size: 2em;"></ion-icon>
+          <a [href]="message.content" target="_blank" download>
+            {{ message.text || 'Archivo adjunto' }}
+          </a>
+        </div>
+
+        <div *ngIf="message.type === 'location'" class="location-message">
+          <div *ngIf="getLatLngFromUrl(message.content) as coords">
+            <app-location-map 
+              [latitude]="coords.lat" 
+              [longitude]="coords.lng">
+            </app-location-map>
+          </div>
+        </div>
+        
+        <div class="message-time">
+          {{ message.createdAt?.toDate() | date:'shortTime' }}
+        </div>
+      </div>
+      
+      <ion-avatar *ngIf="message.senderId === currentUser?.id" class="message-avatar">
+        <img [src]="currentUser?.profileImage || 'assets/default-avatar.png'" alt="your avatar">
+      </ion-avatar>
+    </div>
+  </div>
+  </div>
+
+  <div *ngIf="recordingState.isRecording" class="recording-controls-fixed">
+    <div class="recording-header">
+      <ion-icon name="mic" color="danger"></ion-icon>
+      <span>Grabando...</span>
+    </div>
+    
+    <div class="recording-timer">
+      <span class="recording-dot"></span>
+      <span>{{ recordingState.duration | formatTime }}</span>
+    </div>
+    
+    <ion-button expand="block" color="danger" (click)="stopRecording()">
+      <ion-icon name="stop" slot="start"></ion-icon>
+      Detener
+    </ion-button>
+  </div>
+
+  <div *ngIf="recordingState.showPreview" class="recording-preview-fixed">
+    <div class="preview-controls">
+      <ion-button fill="clear" (click)="playRecordedAudio()">
+        <ion-icon name="play"></ion-icon>
+      </ion-button>
+      <span>{{ recordingState.duration | formatTime }}</span>
+    </div>
+    
+    <div class="preview-actions">
+      <ion-button fill="clear" color="medium" (click)="cancelRecording()">
+        <ion-icon name="trash"></ion-icon>
+      </ion-button>
+      <ion-button expand="block" color="primary" (click)="sendAudioMessage()">
+        <ion-icon name="send" slot="start"></ion-icon>
+        Enviar
+      </ion-button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="container">
+      <ion-textarea 
+        [(ngModel)]="messageControl.value" 
+        placeholder="Escribe un mensaje" 
+        (keyup.enter)="sendMessage()"
+        (ionChange)="checkTextareaContent()"
+        (ionInput)="checkTextareaContent()">
+        <ion-button fill="clear" slot="end" aria-label="Show/hide" (click)="selectImageSource($event)">
+          <ion-icon slot="icon-only" name="attach" aria-hidden="true"></ion-icon>
+        </ion-button>
+      </ion-textarea>
+      
+      <ion-button shape="round" color="new4" (click)="hasText ? sendMessage() : startRecording()">
+        <ion-icon [name]="hasText ? 'send' : 'mic'" slot="icon-only" color="new5"></ion-icon>
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

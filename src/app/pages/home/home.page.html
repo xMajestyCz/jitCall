@@ -1,28 +1,31 @@
 <ion-content color="new3">
     <app-header [noShowExitButton]="false"></app-header>
+
     <ion-searchbar
         show-clear-button="always"
         clear-icon="trash-bin"
         animated="true"
         placeholder="Buscar"
         (ionInput)="filterContacts($event)"
-    ></ion-searchbar>
+        [debounce]="300">
+    </ion-searchbar>
+
     <h1>Contactos</h1>
-    <ion-list>
-        <ion-item *ngFor="let user of contacts" color="new3">
-            <ion-icon color="primary" slot="start" name="person-circle-sharp" size="large"></ion-icon>
+
+    <ion-list *ngIf="contacts.length > 0">
+        <ion-item *ngFor="let user of contacts" color="new3" (click)="goToChat(user)">
+            <ion-avatar slot="start">
+                <img [src]="user.profileImage  || 'assets/default-avatar.png'" alt="Foto de contacto">
+            </ion-avatar>
             <ion-label>
                 <h2>{{ user.firstName }} {{ user.lastName }}</h2>
                 <p>{{ user.phone }}</p>
             </ion-label>
-
-            <ion-button fill="clear" color="new2" (click)="sendCallNotification(user)">
-                <ion-icon name="videocam" size="large" color="primary"></ion-icon>
-            </ion-button>
         </ion-item>
     </ion-list>
+
     <ion-fab horizontal="end" vertical="bottom" slot="fixed">
-        <ion-fab-button (click)="goToToggle()">
+        <ion-fab-button (click)="goToToggle('/add')">
             <ion-icon name="add"></ion-icon>
         </ion-fab-button>
     </ion-fab>

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Firestore, doc, setDoc, collection, query, where, getDocs, updateDoc, onSnapshot, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, collection, query, where, getDocs, updateDoc, onSnapshot, getDoc, orderBy, Timestamp, addDoc, serverTimestamp, deleteDoc } from '@angular/fire/firestore';
 import { collectionData } from '@angular/fire/firestore';
 import { v4 as uuidv4 } from 'uuid';
-import { Observable } from 'rxjs';
+import { combineLatest, from, map, Observable, switchMap, tap } from 'rxjs';
+import { Users } from 'src/app/models/users.models';
 
 @Injectable({
   providedIn: 'root'
@@ -25,8 +26,6 @@ export class FirestoreService {
     const usersRef = collection(this.firestore, 'users');
     const q = query(usersRef, where('phone', '==', phone));
     const querySnapshot = await getDocs(q);
-  
-    console.log('Documentos obtenidos de Firestore:', querySnapshot.docs.map(doc => doc.data()));
   
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
@@ -62,9 +61,24 @@ export class FirestoreService {
     }
   }
 
-  getContacts(userId: string): Observable<any[]> {
+  getContactsWithProfiles(userId: string): Observable<any[]> {
     const contactsRef = collection(this.firestore, `users/${userId}/contacts`);
-    return collectionData(contactsRef, { idField: 'id' }) as Observable<any[]>;
+
+    return collectionData(contactsRef).pipe(
+      switchMap((contacts: any[]) => {
+        const userRequests = contacts.map(contact => {
+          const q = query(collection(this.firestore, 'users'), where('phone', '==', contact.phone));
+          return from(getDocs(q)).pipe(
+            map(snapshot => {
+              const doc = snapshot.docs[0];
+              return doc ? { id: doc.id, ...doc.data() } : contact;
+            })
+          );
+        });
+
+        return combineLatest(userRequests);
+      })
+    );
   }
 
   async checkPhoneExists(phone: string): Promise<boolean> {
@@ -77,7 +91,7 @@ export class FirestoreService {
   async createCall(callData: any): Promise<void> {
     const callRef = doc(this.firestore, `calls/${callData.meetingId}`);
     await setDoc(callRef, callData);
-}
+  }
 
   listenCallStatus(meetingId: string): Observable<any> {
     return new Observable((observer) => {
@@ -104,6 +118,75 @@ export class FirestoreService {
     }
 
     await updateDoc(callRef, { status });
-}
+  }
 
+  async getUserDocument(userId: string): Promise<any> {
+    try {
+      const userRef = doc(this.firestore, `users/${userId}`);
+      const userDoc = await getDoc(userRef);
+      return userDoc.exists() ? userDoc.data() : null;
+    } catch (error) {
+      console.error('Error obteniendo documento de usuario:', error);
+      throw error;
+    }
+  }
+
+  async updateUserProfileImage(userId: string, imageUrl: string): Promise<void> {
+    try {
+      const userRef = doc(this.firestore, `users/${userId}`);
+      await updateDoc(userRef, {
+        profileImage: imageUrl,
+        updatedAt: Timestamp.now() 
+      });
+    } catch (error) {
+      console.error('Error al actualizar la imagen de perfil:', error);
+      throw error;
+    }
+  }
+
+  async updateUserData(userId: string, data: Partial<Users>): Promise<void> {
+    try {
+      const userRef = doc(this.firestore, `users/${userId}`);
+      await updateDoc(userRef, {
+        ...data,
+        updatedAt: Timestamp.now() 
+      });
+    } catch (error) {
+      console.error('Error al actualizar datos de usuario:', error);
+      throw error;
+    }
+  }
+
+  async sendMessage(chatId: string, message: any) {
+    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);
+    return addDoc(messagesRef, {
+      ...message,
+      createdAt: serverTimestamp()
+    });
+  }
+
+  getMessages(chatId: string) {
+    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);
+    const q = query(messagesRef, orderBy('createdAt', 'asc'));
+    return collectionData(q, { idField: 'id' });
+  }
+
+  getChatId(user1Id: string, user2Id: string) {
+    return [user1Id, user2Id].sort().join('_');
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    try {
+      const contactsRef = collection(this.firestore, `users/${userId}/contacts`);
+      const contactsSnap = await getDocs(contactsRef);
+      for (const contact of contactsSnap.docs) {
+        await deleteDoc(contact.ref);
+      }
+      const userRef = doc(this.firestore, `users/${userId}`);
+      await deleteDoc(userRef);
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      throw error;
+    }
+  }
 }

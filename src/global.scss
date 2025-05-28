@@ -25,6 +25,8 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
+@import "~mapbox-gl/dist/mapbox-gl.css";
+
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
@@ -69,6 +71,23 @@
 	--ion-color-tint: var(--ion-color-new2-tint);
 }
 :root {
+	--ion-color-new4: #22262B;
+	--ion-color-new4-rgb: 34,38,43;
+	--ion-color-new4-contrast: #ffffff;
+	--ion-color-new4-contrast-rgb: 255,255,255;
+	--ion-color-new4-shade: #1e2126;
+	--ion-color-new4-tint: #383c40;
+}
+
+.ion-color-new4 {
+	--ion-color-base: var(--ion-color-new4);
+	--ion-color-base-rgb: var(--ion-color-new4-rgb);
+	--ion-color-contrast: var(--ion-color-new4-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-new4-contrast-rgb);
+	--ion-color-shade: var(--ion-color-new4-shade);
+	--ion-color-tint: var(--ion-color-new4-tint);
+}
+:root {
 	--ion-color-new3: #12161B;
 	--ion-color-new3-rgb: 18,22,27;
 	--ion-color-new3-contrast: #ffffff;
@@ -76,7 +95,6 @@
 	--ion-color-new3-shade: #101318;
 	--ion-color-new3-tint: #2a2d32;
 }
-
 .ion-color-new3 {
 	--ion-color-base: var(--ion-color-new3);
 	--ion-color-base-rgb: var(--ion-color-new3-rgb);
@@ -84,6 +102,22 @@
 	--ion-color-contrast-rgb: var(--ion-color-new3-contrast-rgb);
 	--ion-color-shade: var(--ion-color-new3-shade);
 	--ion-color-tint: var(--ion-color-new3-tint);
+}
+:root {
+	--ion-color-new5: #1F73F8;
+	--ion-color-new5-rgb: 31,115,248;
+	--ion-color-new5-contrast: #000000;
+	--ion-color-new5-contrast-rgb: 0,0,0;
+	--ion-color-new5-shade: #1b65da;
+	--ion-color-new5-tint: #3581f9;
+}
+.ion-color-new5 {
+	--ion-color-base: var(--ion-color-new5);
+	--ion-color-base-rgb: var(--ion-color-new5-rgb);
+	--ion-color-contrast: var(--ion-color-new5-contrast);
+	--ion-color-contrast-rgb: var(--ion-color-new5-contrast-rgb);
+	--ion-color-shade: var(--ion-color-new5-shade);
+	--ion-color-tint: var(--ion-color-new5-tint);
 }
 *{
     font-family: "Ubuntu", sans-serif;
@@ -118,4 +152,22 @@
 }
 .container-flex[_ngcontent-ng-c2642575338]{
     padding: 0 !important;
+}
+.popover-content{
+    --max-width: 150px;
+	max-width: 150px;
+}
+.textarea-wrapper.sc-ion-textarea-md textarea.sc-ion-textarea-md{
+    padding: 1rem 0 0 1rem;
+}
+.end-slot-wrapper.sc-ion-textarea-md{
+    padding-top: .4rem;
+}
+.container-flex{
+	padding: 0 !important;
+}
+.icon[_ngcontent-ng-c3584079381]
+{
+	align-self: center;
+	margin-left: 1rem;
 }

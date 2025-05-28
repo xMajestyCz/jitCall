@@ -1,0 +1,14 @@
+<div class="container" (click)="enableImageUpload ? null : goToToggle()">
+  <div class="upload-area" (click)="enableImageUpload ? selectImageSource($event) : null">
+    <div *ngIf="!selectedImage" class="upload-prompt">
+      <ion-icon name="person" size="large" color="dark" size="large"></ion-icon>
+      <ion-label *ngIf="enableImageUpload">Añadir Imagen</ion-label>
+    </div>
+    <div *ngIf="selectedImage" class="image-preview">
+      <img [src]="selectedImage" alt="Preview">
+    </div>
+  </div>
+  <h4 *ngIf="!enableImageUpload && currentUser">
+    {{ currentUser.firstName }} {{ currentUser.lastName }}
+  </h4>
+</div>

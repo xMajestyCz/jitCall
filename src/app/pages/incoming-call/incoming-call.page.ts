@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FirebaseError } from '@angular/fire/app';
 import { NavController } from '@ionic/angular';
 import { Jitsi } from 'capacitor-jitsi-meet';
 import { Subscription } from 'rxjs';
@@ -61,20 +60,14 @@ export class IncomingCallPage implements OnInit {
         chatEnabled: false,
         inviteEnabled: false, 
       });
-  
-      console.log('Conferencia iniciada:', result);
-  
+    
       await this.firestoreService.updateCallStatus(this.meetingId, 'accepted');
       this.navController.pop();
     } catch (error) {
       console.error('Error al unirse a la llamada:', error);
-      if (error instanceof FirebaseError) {
-        console.error('Código de error:', error.code);
-      }
     }
   }
   
-
   rejectCall() {
     console.log('Llamada rechazada');
     this.navController.pop();

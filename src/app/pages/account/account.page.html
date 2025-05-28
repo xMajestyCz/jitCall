@@ -1,0 +1,80 @@
+<ion-content color="new3">
+  <app-header [noShowButton]="false"></app-header>
+  <h1>Ajustes</h1>
+  <app-img-container toggleRoute="/change-pic-name"></app-img-container>
+  <h4 id="popover-button-account">Cuenta</h4>
+
+  <ion-modal #modalEmail trigger="change-email-trigger">
+    <ng-template>
+      <ion-content>
+        <ion-toolbar>
+          <ion-title>Cambiar email</ion-title>
+          <ion-buttons slot="end">
+            <ion-button color="light" (click)="closeModal('modalEmail')">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+        <form [formGroup]="emailForm" (ngSubmit)="onChangeEmail()">
+          <app-form-field
+            [form]="emailForm"
+            controlName="email"
+            label="Nuevo email"
+            placeholder="Nuevo email"
+            iconName="mail-outline"
+            type="email"
+            [required]="true">
+          </app-form-field>
+          <ion-button expand="block" color="new5" shape="round" [disabled]="emailForm.invalid || emailForm.pristine" type="submit">Guardar</ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #modalPassword trigger="change-password-trigger">
+    <ng-template>
+      <ion-content>
+        <ion-toolbar>
+          <ion-title>Cambiar contraseña</ion-title>
+          <ion-buttons slot="end">
+            <ion-button color="light" (click)="closeModal('modalPassword')">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+        <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+          <app-form-field
+            [form]="passwordForm"
+            controlName="password"
+            label="Nueva contraseña"
+            placeholder="Nueva contraseña"
+            iconName="key-sharp"
+            type="password"
+            [showPasswordToggle]="true"
+            [required]="true">
+          </app-form-field>
+          <ion-button expand="block" color="new5" shape="round" [disabled]="passwordForm.invalid || passwordForm.pristine" type="submit">Guardar</ion-button>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #modalDelete trigger="delete-account-trigger">
+    <ng-template>
+      <ion-content>
+        <ion-toolbar>
+          <ion-title>Eliminar cuenta</ion-title>
+          <ion-buttons slot="end">
+            <ion-button color="light" (click)="closeModal('modalDelete')">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+        <div style="padding: 1rem;">
+          <p>¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.</p>
+          <ion-button expand="block" color="danger" shape="round" (click)="onDeleteAccount()">Eliminar cuenta</ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-list>
+    <ion-item button id="change-email-trigger" color="new">Cambiar email</ion-item>
+    <ion-item button id="change-password-trigger" color="new">Cambiar contraseña</ion-item>
+    <ion-item button id="delete-account-trigger" color="new">Eliminar cuenta</ion-item>
+  </ion-list>
+</ion-content>

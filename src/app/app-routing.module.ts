@@ -25,9 +25,26 @@ const routes: Routes = [
     path: 'add',
     canActivate: [authGuard],
     loadChildren: () => import('./pages/add/add.module').then( m => m.AddPageModule)
-  },  {
+  },
+  {
     path: 'incoming-call',
+    canActivate: [authGuard],
     loadChildren: () => import('./pages/incoming-call/incoming-call.module').then( m => m.IncomingCallPageModule)
+  },
+  {
+    path: 'account',
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/account/account.module').then( m => m.AccountPageModule)
+  },
+  {
+    path: 'change-pic-name',
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/change-pic-name/change-pic-name.module').then( m => m.ChangePicNamePageModule)
+  },
+  {
+    path: 'chat',
+    canActivate: [authGuard],
+    loadChildren: () => import('./pages/chat/chat.module').then( m => m.ChatPageModule)
   },
 
 ];

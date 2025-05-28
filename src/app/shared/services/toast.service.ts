@@ -8,10 +8,10 @@ export class ToastService {
 
   constructor(private toastController: ToastController) { }
 
-  async showToast(message: string, duration: number = 2000, color: string = 'primary') {
+  async showToast(message: string, color: string) {
     const toast = await this.toastController.create({
       message,
-      duration,
+      duration: 2500,
       color,
       position: 'top'
     });

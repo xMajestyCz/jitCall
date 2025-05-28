@@ -1,6 +1,7 @@
 .icon{
     border-radius: .8rem;
     background-color: #2074F8;
+    padding-top: 3px;
     width: 30px;
     height: 30px;
     align-content: center;
@@ -18,4 +19,7 @@ ion-button{
     align-content: center;
     text-align: center;
     border-radius: 1rem;
+}
+.list-md{
+    padding: 0;
 }

@@ -1,0 +1,26 @@
+h1{
+    padding-left: 1rem;
+}
+ion-item {
+    --background: transparent;
+    --color: #fff;
+}
+h4{
+    padding-left: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #23272B;
+    cursor: pointer;
+}
+ion-modal {
+    --height: 50%;
+    --border-radius: 16px;
+    --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+ion-modal::part(backdrop) {
+    background: rgba(209, 213, 219);
+    opacity: 1;
+}
+ion-modal ion-toolbar {
+    --background: #1F73F8;
+    --color: white;
+}

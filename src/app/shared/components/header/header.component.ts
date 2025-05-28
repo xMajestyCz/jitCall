@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { Location } from '@angular/common';
 import { AlertService } from 'src/app/shared/services/alert.service';
 import { Router } from '@angular/router';
@@ -14,6 +14,8 @@ import { ToastService } from 'src/app/shared/services/toast.service';
 export class HeaderComponent  implements OnInit {
   @Input() noShowButton = true;
   @Input() noShowExitButton = true;
+  @Input() noShowCamButton = true;
+  @Output() callButtonClick = new EventEmitter<void>();
 
   constructor(
       private location: Location,
@@ -29,14 +31,17 @@ export class HeaderComponent  implements OnInit {
     this.location.back();
   }
 
+  onCallClick() {
+    this.callButtonClick.emit();
+  }
+
   async logout() {
     try {
       await this.authService.logout();
-      await this.toastService.showToast('Sesión cerrada correctamente ✅');
+      await this.toastService.showToast('Sesión cerrada correctamente ✅', 'success');
       this.router.navigate(['/log-in']);
     } catch (err) {
-      console.error('Error al cerrar sesión:', err);
-      await this.toastService.showToast('Error al cerrar sesión 🔐', 3000, 'danger');
+      await this.toastService.showToast('Error al cerrar sesión 🔐', 'danger');
     }
   }
 
@@ -51,5 +56,9 @@ export class HeaderComponent  implements OnInit {
     if (confirm) {
       this.logout();
     }
+  }
+
+  toggleRoute(){
+    this.router.navigate(['/account']);
   }
 }

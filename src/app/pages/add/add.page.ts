@@ -4,8 +4,6 @@ import { Users } from 'src/app/models/users.models';
 import { ToastService } from 'src/app/shared/services/toast.service';
 import { FirestoreService } from 'src/app/core/services/firestore.service';
 import { AuthService } from 'src/app/core/services/auth.service';
-import { FcmService } from 'src/app/core/services/fcm.service';
-import { ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -23,8 +21,6 @@ export class AddPage implements OnInit, OnDestroy {
     private firestoreService: FirestoreService,
     private toastService: ToastService,
     private authService: AuthService,
-    private fcmService: FcmService, 
-    private modalCtrl: ModalController
   ) {}
 
   ngOnInit() {
@@ -44,51 +40,32 @@ export class AddPage implements OnInit, OnDestroy {
     }
   
     this.searchResults = await this.firestoreService.searchUsersByPhone(searchValue);
-    console.log('Resultados de búsqueda:', this.searchResults);
   }
 
   async addContact(user: any): Promise<void> {
     try {
       const currentUser = this.authService.getCurrentUser();
       if (!currentUser) {
-        this.toastService.showToast('No se pudo obtener el usuario autenticado ❌', 2500, 'danger');
+        this.toastService.showToast('No se pudo obtener el usuario autenticado ❌', 'danger');
         return;
       }
-  
+
       const currentUserPhone = await this.authService.getCurrentUserPhone();
       if (!currentUserPhone) {
-        this.toastService.showToast('No se pudo obtener el número de teléfono del usuario autenticado ❌', 2500, 'danger');
+        this.toastService.showToast('No se pudo obtener el número de teléfono del usuario autenticado ❌', 'danger');
         return;
       }
-  
-      // Validación para evitar que el usuario se agregue a sí mismo
+
       if (user.phone === currentUserPhone) {
-        this.toastService.showToast('No puedes agregarte a ti mismo como contacto ❌', 2500, 'warning');
+        this.toastService.showToast('No puedes agregarte a ti mismo ❌', 'warning');
         return;
       }
-  
-      const currentUserId = currentUser.uid;
-      const contactRef = collection(this.firestore, `users/${currentUserId}/contacts`);
-      const q = query(contactRef, where('phone', '==', user.phone));
-      const querySnapshot = await getDocs(q);
-  
-      if (!querySnapshot.empty) {
-        this.toastService.showToast('El contacto ya ha sido agregado ❌', 2500, 'warning');
-        return;
-      }
-  
-      const contactData = {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phone: user.phone,
-        token: user.token || '',
-      };
-  
-      await setDoc(doc(contactRef, user.phone), contactData);
-      this.toastService.showToast('Contacto agregado correctamente ✅', 2500, 'success');
+
+      await this.firestoreService.addContact(user, currentUser.uid);
+      this.toastService.showToast('Contacto agregado correctamente ✅', 'success');
+      this.searchResults = this.searchResults.filter(u => u.phone !== user.phone);
     } catch (error) {
-      console.error('Error al agregar contacto:', error);
-      this.toastService.showToast('Error al agregar contacto ❌', 2500, 'danger');
+      this.toastService.showToast(error instanceof Error ? error.message : 'Error al agregar contacto ❌', 'danger');
     }
   }
 }

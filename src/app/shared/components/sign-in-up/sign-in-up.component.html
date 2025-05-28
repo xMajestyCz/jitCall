@@ -6,33 +6,86 @@
     <h1>Jitcall</h1>
     <h1>{{ isLogin ? 'Iniciar Sesión' : "Registro"}}</h1>
   </div>
+
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <ion-input formControlName="firstName" *ngIf="!isLogin" label="Nombre" label-placement="floating" fill="outline" placeholder="Nombre" required="">
-      <ion-icon slot="start" name="person" aria-hidden="true"></ion-icon>
-    </ion-input>
-    <ion-input formControlName="lastName" *ngIf="!isLogin" label="Apellido" label-placement="floating" fill="outline" placeholder="Apellido" required="">
-      <ion-icon slot="start" name="person" aria-hidden="true"></ion-icon>
-    </ion-input>
-    <ion-input formControlName="email" label="Email" label-placement="floating" fill="outline" type="email" placeholder="Email" required="">
-      <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
-    </ion-input>
-    <ion-input formControlName="phone" *ngIf="!isLogin" label="Teléfono" label-placement="floating" fill="outline" type="tel" placeholder="Teléfono" required="">
-      <ion-icon slot="start" name="call" aria-hidden="true"></ion-icon>
-    </ion-input>
-    <ion-input formControlName="password" label="Contraseña" label-placement="floating" fill="outline" [type]="showPassword ? 'text' : 'password'" placeholder="Contraseña" required>
-      <ion-icon slot="start" name="key-sharp" aria-hidden="true"></ion-icon>
-      <ion-button fill="clear" slot="end" aria-label="Show/hide" (click)="togglePassword()">
-        <ion-icon slot="icon-only" name="eye" aria-hidden="true" color="medium"></ion-icon>
-      </ion-button>
-    </ion-input>
-    <ion-button class="sign-up" expand="block" fill="clear" shape="round" color="light" [disabled]="form.invalid" type="submit">
-      {{ isLogin ? 'Iniciar Sesión' : "Registrarse" }}
+    <app-form-field
+      *ngIf="!isLogin"
+      [form]="form"
+      controlName="firstName"
+      label="Nombre"
+      placeholder="Nombre"
+      iconName="person"
+      [required]="true">
+    </app-form-field>
+
+    <app-form-field
+      *ngIf="!isLogin"
+      [form]="form"
+      controlName="lastName"
+      label="Apellido"
+      placeholder="Apellido"
+      iconName="person"
+      [required]="true">
+    </app-form-field>
+
+    <app-form-field
+      [form]="form"
+      controlName="email"
+      label="Email"
+      placeholder="Email"
+      type="email"
+      iconName="mail-outline"
+      [required]="true">
+    </app-form-field>
+
+    <app-form-field
+      *ngIf="!isLogin"
+      [form]="form"
+      controlName="phone"
+      label="Teléfono"
+      placeholder="Teléfono"
+      type="tel"
+      iconName="call"
+      [maxlength]="10"
+      [minlength]="10"
+      [required]="true"
+      (keyPress)="onlyNumbers($event)">
+    </app-form-field>
+
+    <app-form-field
+      [form]="form"
+      controlName="password"
+      label="Contraseña"
+      placeholder="Contraseña"
+      type="password"
+      iconName="key-sharp"
+      [showPasswordToggle]="true"
+      [required]="true"
+      [minlength]="6">
+    </app-form-field>
+
+    <ion-button 
+      class="sign-up" 
+      expand="block" 
+      fill="clear" 
+      shape="round" 
+      color="light" 
+      [disabled]="form.invalid" 
+      type="submit">
+      {{ isLogin ? 'Iniciar Sesión' : 'Registrarse' }}
     </ion-button>
   </form>
-  <div>
-    <ion-label>{{ isLogin ? '¿Aún no tienes una cuenta?' : '¿Ya tienes una cuenta?'}}</ion-label>
-    <ion-label class="routing" (click)="goToToggle()"> 
-      {{ isLogin ? 'Registrate' : 'Inicia sesión' }}
+
+  <div class="switch-mode">
+    <ion-label>
+      {{ isLogin ? '¿Aún no tienes una cuenta?' : '¿Ya tienes una cuenta?' }}
     </ion-label>
+    <ion-label class="routing" fill="clear" (click)="toggleMode()">
+      {{ isLogin ? 'Regístrate' : 'Inicia Sesión' }}
+    </ion-label>
+  </div>
+
+  <div class="spinner-overlay" *ngIf="loading">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
   </div>
 </div>

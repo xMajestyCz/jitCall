@@ -3,7 +3,6 @@ import { PushNotifications, Token, ActionPerformed } from '@capacitor/push-notif
 import { FirestoreService } from './firestore.service';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,6 @@ export class FcmService {
     private firestoreService: FirestoreService,
     private authService: AuthService,
     private router: Router,
-    private modalCtrl: ModalController
   ) {}
 
   async initPushNotifications() {
@@ -40,7 +38,6 @@ export class FcmService {
       console.log('Notificación recibida en primer plano:', notification);
     });
     
-
     PushNotifications.addListener('pushNotificationActionPerformed', (action: ActionPerformed) => {
       console.log('Acción de notificación:', action);
     

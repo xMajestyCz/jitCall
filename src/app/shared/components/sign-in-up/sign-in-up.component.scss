@@ -25,10 +25,6 @@ h1{
 ion-label{
     color: #fff;
 }
-ion-input{
-    margin: 1.5rem;
-    max-width: 85vw;
-}
 .sign-up{
     max-width: 85vw;
     min-width: 85vw;
@@ -41,4 +37,20 @@ ion-input{
 .routing{
     cursor: pointer;
     font-weight: bold;
+}
+.spinner-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+ion-spinner{
+    height: 100px;
+    width: 100px;
 }

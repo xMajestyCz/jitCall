@@ -9,8 +9,21 @@
       </div>
       <ion-title>Jitcall</ion-title>
     </div>
-    <ion-button *ngIf="!noShowExitButton" (click)="presentLogoutAlert()" fill="clear" slot="end">
-      <ion-icon name="log-out-outline"></ion-icon>
+    <ion-button id="popover-button" fill="clear" slot="end" *ngIf="!noShowExitButton">
+      <ion-icon name="menu" size="large"></ion-icon>
     </ion-button>
+    <ion-button fill="clear" color="new2" slot="end" *ngIf="!noShowCamButton" (click)="onCallClick(); $event.stopPropagation()">
+      <ion-icon name="videocam" size="large" color="primary"></ion-icon>
+    </ion-button>
+    <ion-popover trigger="popover-button" [dismissOnSelect]="true">
+      <ng-template>
+        <ion-content color="new">
+          <ion-list>
+            <ion-item [button]="true" [detail]="false" color="new" (click)="toggleRoute()">Ajustes</ion-item>
+            <ion-item [button]="true" id="nested-trigger" (click)="presentLogoutAlert()" color="new">Cerrar sesión</ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-popover>
   </ion-toolbar>
 </ion-header>
